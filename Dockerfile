@@ -8,7 +8,7 @@ COPY . /app
 
 ENV DB_HOST=stores-pg-postgresql
 ENV ES_HOST=elasticsearch
-ENV KC_HOST=kakfa-connect
+ENV KC_HOST=kafka-connect
 
 ENV DB_PORT=5432
 ENV ES_PORT=9200
