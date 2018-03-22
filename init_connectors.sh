@@ -45,20 +45,7 @@ products_json='{
   "name": "products-connector",
   "config": {
     "connector.class": "com.skynyrd.kafka.ElasticSinkConnector",
-    "topics": "stores-pg.public.products",
-    "tasks.max": "1",
-    "type.name": "_doc",
-    "elastic.url": '\"$es_host\"',
-    "index.name": "products",
-    "elastic.port": '\"$es_port\"'
-  }
-}'
-
-prod_attr_json='{
-  "name": "prod_attr_values-connector",
-  "config": {
-    "connector.class": "com.skynyrd.kafka.ElasticSinkConnector",
-    "topics": "stores-pg.public.prod_attr_values",
+    "topics": "stores-pg.public.base_products,stores-pg.public.products,stores-pg.public.prod_attr_values",
     "tasks.max": "1",
     "type.name": "_doc",
     "elastic.url": '\"$es_host\"',
@@ -88,6 +75,9 @@ es_stores_json='
                },
                "id": {
                   "type": "integer"
+               },
+               "suggest" : {
+                   "type" : "completion"
                }
             }
          }
@@ -136,8 +126,28 @@ es_products_json='
                "id": {
                   "type": "integer"
                },
-               "attrs": {
-                  "type": "nested"
+               "category_id": {
+                  "type": "integer"
+               },
+               "views": {
+                  "type": "integer"
+               },
+               "variants": {
+                  "type": "nested",
+                  "properties": {
+                     "prod_id": {
+                        "type": "integer"
+                     },
+                     "discount": {
+                        "type": "double"
+                     },
+                     "attrs": {
+                        "type": "nested"
+                     }
+                  }
+               },
+               "suggest" : {
+                   "type" : "completion"
                }
             }
          }
@@ -152,7 +162,7 @@ es_products_json='
 
 echo "Initializing connectors"
 
-for connector in "$debezium_json" "$stores_json" "$products_json" "$prod_attr_json"
+for connector in "$debezium_json" "$stores_json" "$products_json"
 do
     curl -si -X POST -H "Accept: application/json" -H "Content-Type: application/json" ${kc_host}:${kc_port}/connectors -d "$connector"
 done
