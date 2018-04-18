@@ -73,8 +73,25 @@ es_stores_json='
                "user_id": {
                   "type": "integer"
                },
+               "rating": {
+                  "type": "double"
+               },
+               "country": {
+                  "type": "text"
+               },
                "id": {
                   "type": "integer"
+               },
+               "product_categories": {
+                  "type": "nested",
+                  "properties": {
+                     "category_id": {
+                        "type": "integer"
+                     },
+                     "count": {
+                        "type": "integer"
+                     }
+                  }
                },
                "suggest" : {
                    "type" : "completion"
@@ -132,6 +149,9 @@ es_products_json='
                "views": {
                   "type": "integer"
                },
+               "rating": {
+                  "type": "double"
+               },
                "variants": {
                   "type": "nested",
                   "properties": {
@@ -141,8 +161,22 @@ es_products_json='
                      "discount": {
                         "type": "double"
                      },
+                     "price": {
+                        "type": "double"
+                     },
                      "attrs": {
-                        "type": "nested"
+                        "type": "nested",
+                        "properties": {
+                          "attr_id": {
+                              "type": "integer"
+                          },
+                          "float_val": {
+                              "type": "double"
+                          },
+                          "str_val": {
+                              "type": "text"
+                          }
+                        }
                      }
                   }
                },
