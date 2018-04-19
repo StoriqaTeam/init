@@ -5,10 +5,12 @@ set -u
 kc_host=${1-$KC_HOST}
 pg_host=${2-$DB_HOST}
 es_host=${3-$ES_HOST}
+sr_host=${4-$SR_HOST}
 
-kc_port=${4-$KC_PORT}
-pg_port=${5-$DB_PORT}
-es_port=${6-$ES_PORT}
+kc_port=${5-$KC_PORT}
+pg_port=${6-$DB_PORT}
+es_port=${7-$ES_PORT}
+sr_port=${8-$SR_PORT}
 
 pg_user="${7-$DB_USER}"
 pg_pass="${8-$DB_PASS}"
@@ -32,24 +34,10 @@ stores_json='{
   "name": "stores-connector",
   "config": {
     "connector.class": "com.skynyrd.kafka.ElasticSinkConnector",
-    "topics": "stores-pg.public.stores",
+    "topics": "stores-pg",
     "tasks.max": "1",
     "type.name": "_doc",
     "elastic.url": '\"$es_host\"',
-    "index.name": "stores",
-    "elastic.port": '\"$es_port\"'
-  }
-}'
-
-products_json='{
-  "name": "products-connector",
-  "config": {
-    "connector.class": "com.skynyrd.kafka.ElasticSinkConnector",
-    "topics": "stores-pg.public.base_products,stores-pg.public.products,stores-pg.public.prod_attr_values",
-    "tasks.max": "1",
-    "type.name": "_doc",
-    "elastic.url": '\"$es_host\"',
-    "index.name": "products",
     "elastic.port": '\"$es_port\"'
   }
 }'
@@ -193,12 +181,21 @@ es_products_json='
 /app/wait_for_it.sh ${pg_host}:${pg_port} || sleep 30
 /app/wait_for_it.sh ${es_host}:${es_port} || sleep 30
 /app/wait_for_it.sh ${kc_host}:${kc_port} || sleep 30
+/app/wait_for_it.sh ${sr_host}:${sr_port} || sleep 30
+
+# We do not want Schema Registry to maintain any compatibility
+curl -si -XPUT -H "Content-Type: application/json" ${sr_host}:${sr_port}/config -d '{"compatibility": "NONE"}'
 
 echo "Initializing connectors"
 
-for connector in "$debezium_json" "$stores_json" "$products_json"
+for connector in "$debezium_json" "$stores_json"
 do
-    curl -si -X POST -H "Accept: application/json" -H "Content-Type: application/json" ${kc_host}:${kc_port}/connectors -d "$connector"
+    curl -si \
+      -X POST \
+      -H "Accept: application/json" \
+      -H "Content-Type: application/json" \
+      ${kc_host}:${kc_port}/connectors \
+      -d "$connector"
 done
 
 echo
