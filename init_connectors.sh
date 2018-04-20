@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -u
+set -ux
 
 kc_host=${1-$KC_HOST}
 pg_host=${2-$DB_HOST}
@@ -26,7 +26,14 @@ debezium_json='{
     "database.password": '\"$pg_pass\"',
     "name": "stores-pg-connector",
     "database.server.name": '\"$pg_host\"',
-    "database.port": '\"$pg_port\"'
+    "database.port": '\"$pg_port\"',
+    "transforms": "Reroute",
+    "transforms.Reroute.type": "io.debezium.transforms.ByLogicalTableRouter",
+    "transforms.Reroute.topic.regex": ".*",
+    "transforms.Reroute.topic.replacement": "stores-pg",
+    "transforms.Reroute.key.field.name": "table",
+    "transforms.Reroute.key.field.regex": "(.*)\\.(.*)\\.(.*)",
+    "transforms.Reroute.key.field.replacement": "$3"
   }
 }'
 
@@ -174,8 +181,7 @@ es_products_json='
             }
          }
       }
-}
-'
+}'
 
 # Checking availability:
 /app/wait_for_it.sh ${pg_host}:${pg_port} || sleep 30
@@ -195,7 +201,7 @@ do
       -H "Accept: application/json" \
       -H "Content-Type: application/json" \
       ${kc_host}:${kc_port}/connectors \
-      -d "$connector"
+      --data-binary "$connector"
 done
 
 echo
