@@ -159,6 +159,9 @@ es_products_json='
                      "price": {
                         "type": "double"
                      },
+                     "currency_id": {
+                        "type": "integer"
+                     },
                      "attrs": {
                         "type": "nested",
                         "properties": {
