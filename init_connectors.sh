@@ -72,7 +72,12 @@ es_stores_json='
                   "type": "double"
                },
                "country": {
-                  "type": "text"
+                  "type": "text",
+                  "fields": {
+                    "keyword": { 
+                      "type": "keyword"
+                    }
+                  }
                },
                "id": {
                   "type": "integer"
