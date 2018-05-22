@@ -71,6 +71,9 @@ es_stores_json='
                "rating": {
                   "type": "double"
                },
+               "status": {
+                  "type": "keyword"
+               },
                "country": {
                   "type": "text",
                   "fields": {
@@ -151,6 +154,9 @@ es_products_json='
                },
                "rating": {
                   "type": "double"
+               },
+               "status": {
+                  "type": "keyword"
                },
                "variants": {
                   "type": "nested",
