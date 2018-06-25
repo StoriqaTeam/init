@@ -149,6 +149,9 @@ es_products_json='
                "category_id": {
                   "type": "integer"
                },
+               "store_id": {
+                  "type": "integer"
+               },
                "views": {
                   "type": "integer"
                },
