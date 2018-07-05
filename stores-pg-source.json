@@ -1,0 +1,20 @@
+{
+  "name": "stores-pg-source",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "database.user": "$DB_USER",
+    "database.dbname": "$DB",
+    "database.hostname": "$DB_HOST",
+    "database.password": "$DB_PASS",
+    "name": "stores-pg-connector",
+    "database.server.name": "$DB_HOST",
+    "database.port": "$DB_PORT",
+    "transforms": "Reroute",
+    "transforms.Reroute.type": "io.debezium.transforms.ByLogicalTableRouter",
+    "transforms.Reroute.topic.regex": ".*",
+    "transforms.Reroute.topic.replacement": "stores-pg",
+    "transforms.Reroute.key.field.name": "table",
+    "transforms.Reroute.key.field.regex": "(.*)\\.(.*)\\.(.*)",
+    "transforms.Reroute.key.field.replacement": "$3"
+  }
+} 

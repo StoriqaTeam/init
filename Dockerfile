@@ -1,9 +1,8 @@
 FROM alpine
 
 RUN apk update \
-  && apk add bash \
-  && apk add curl
-
+  && apk add bash curl gettext \
+  && rm /var/cache/apk/*
 COPY . /app
 
 ENV DB_HOST=stores-pg-postgresql
@@ -19,6 +18,8 @@ ENV SR_PORT=8081
 ENV DB_USER=stores
 ENV DB_PASS=stores
 ENV DB=stores
+
+WORKDIR /app
 
 ENTRYPOINT /app/init_connectors.sh
 

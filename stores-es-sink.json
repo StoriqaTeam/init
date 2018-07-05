@@ -1,0 +1,11 @@
+{
+  "name": "stores-es-sink",
+  "config": {
+    "connector.class": "com.skynyrd.kafka.ElasticSinkConnector",
+    "topics": "stores-pg",
+    "tasks.max": "1",
+    "type.name": "_doc",
+    "elastic.url": "$ES_HOST",
+    "elastic.port": "$ES_PORT"
+  }
+} 
